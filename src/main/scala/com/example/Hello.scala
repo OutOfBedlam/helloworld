@@ -14,10 +14,11 @@ object Hello extends App {
   implicit val mat: Materializer = ActorMaterializer()
 
   final val Msg = "Hello, world!"
-  println("Foo 3.0!!")
+  println("Foo 4.0!!")
 
   Source(0.seconds, 1.second, Msg)
-    .runForeach(e => println(e + " v3.0"))
+    .map(e => e.hashCode + System.currentTimeMillis())
+    .runForeach(e => println(e + " v4.0"))
 
   system.awaitTermination()
 }
