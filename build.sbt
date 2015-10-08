@@ -3,12 +3,20 @@ name := "helloworld"
 
 organization := "com.example"
 
-version := "2.0"
+version := "3.0"
 
 scalaVersion := "2.11.7"
 
 // Change this to another test framework if you prefer
-libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.4" % "test"
+libraryDependencies ++= {
+  val akkaVersion    = "2.3.12"
+  val streamsVersion = "1.0"
+  Seq(
+    "com.typesafe.akka"  %%  "akka-actor"                       % akkaVersion,
+    "com.typesafe.akka"  %%  "akka-stream-experimental"         % streamsVersion,
+    "org.scalatest" %% "scalatest" % "2.2.4" % "test"
+  )
+}
 
 mainClass in assembly := Some("com.example.Hello")
 
