@@ -1,0 +1,10 @@
+target/
+/RUNNING_PID
+/logs/
+/project/*-shim.sbt
+/project/project/
+/project/streams/
+buildinfo.properties
+.idea/
+*.iml
+.DS_Store
