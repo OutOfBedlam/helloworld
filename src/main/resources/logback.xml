@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
     <appender name="stash" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
-        <destination>127.0.0.1:4560</destination>
+        <!--<destination>127.0.0.1:4560</destination>-->
+        <!--<destination>boot2docker:4560</destination>-->
+        <destination>shipper:4560</destination>
+
         <!-- encoder is required -->
         <encoder class="net.logstash.logback.encoder.LogstashEncoder" />
     </appender>
