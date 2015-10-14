@@ -1,3 +1,4 @@
+import spray.revolver.RevolverPlugin._
 
 name := "helloworld"
 
@@ -11,9 +12,14 @@ scalaVersion := "2.11.7"
 libraryDependencies ++= {
   val akkaVersion    = "2.3.12"
   val streamsVersion = "1.0"
+  val logbackVersion = "1.1.3"
   Seq(
     "com.typesafe.akka"  %%  "akka-actor"                       % akkaVersion,
     "com.typesafe.akka"  %%  "akka-stream-experimental"         % streamsVersion,
+    "com.typesafe.akka"   %% "akka-slf4j"                       % akkaVersion,
+    "ch.qos.logback"       % "logback-classic"                  % logbackVersion,
+    "ch.qos.logback"       % "logback-access"                   % logbackVersion,
+    "net.logstash.logback" % "logstash-logback-encoder"         % "4.5.1",
     "org.scalatest" %% "scalatest" % "2.2.4" % "test"
   )
 }
@@ -50,6 +56,14 @@ imageNames in docker := Seq(
   ImageName(s"dnvriend/${name.value}:latest"),
   ImageName (s"dnvriend/${name.value}:v${version.value}")
 )
+
+// enable dependencyGraph
+net.virtualvoid.sbt.graph.Plugin.graphSettings
+
+// enable Revolver
+Revolver.settings
+
+mainClass in Revolver.reStart := Some("com.example.Hello")
 
 lazy val helloWorldApp = (project in file(".")).
   enablePlugins(DockerPlugin)
