@@ -1,0 +1,26 @@
+#RabbitMQ: docker run -d --hostname my-rabbit --name some-rabbit -e RABBITMQ_DEFAULT_USER=user -e RABBITMQ_DEFAULT_PASS=password -p 15672:15672 -p 5672:5672 rabbitmq:3-management
+
+elasticsearch:
+  image: elasticsearch
+  ports:
+    - "9200:9200"
+    - "9300:9300"
+
+kibana:
+  image: kibana
+#  environment:
+#    - "ELASTICSEARCH_URL=http://es:9200"
+  links:
+    - "elasticsearch:elasticsearch"
+  ports:
+    - "5601:5601"
+
+rabbitmq:
+  image: rabbitmq:3-management
+  environment:
+    - "RABBITMQ_DEFAULT_USER=user"
+    - "RABBITMQ_DEFAULT_PASS=password"
+  ports:
+    - "15672:15672"
+    - "5672:5672"
+  hostname: "my-rabbit"
