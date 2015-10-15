@@ -1,39 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <appender name="stash" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
+    <!--<appender name="stash" class="net.logstash.logback.appender.LogstashTcpSocketAppender">-->
         <!--<destination>127.0.0.1:4560</destination>-->
         <!--<destination>boot2docker:4560</destination>-->
-        <destination>shipper:4560</destination>
+        <!--<encoder class="net.logstash.logback.encoder.LogstashEncoder" />-->
+    <!--</appender>-->
 
-        <!-- encoder is required -->
-        <encoder class="net.logstash.logback.encoder.LogstashEncoder" />
-    </appender>
+    <!--<appender name="console" class="ch.qos.logback.core.ConsoleAppender">-->
+        <!--<filter class="ch.qos.logback.classic.filter.ThresholdFilter">-->
+            <!--<level>debug</level>-->
+        <!--</filter>-->
+        <!--&lt;!&ndash;<encoder> <pattern>%date{ISO8601} %-5level [%-50.50logger] - %msg%n</pattern> </encoder>&ndash;&gt;-->
+        <!--<encoder class="net.logstash.logback.encoder.LogstashEncoder" />-->
+    <!--</appender>-->
 
-    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
-        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-            <level>debug</level>
-        </filter>
-        <!--<encoder> <pattern>%date{ISO8601} %-5level [%-50.50logger] - %msg%n</pattern> </encoder>-->
+    <appender name="file" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>/tmp/helloworld.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+            <fileNamePattern>/tmp/helloworld.%i</fileNamePattern>
+            <minIndex>1</minIndex>
+            <maxIndex>4</maxIndex>
+        </rollingPolicy>
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <maxFileSize>10MB</maxFileSize>
+        </triggeringPolicy>
+        <!--<encoder> <pattern>%date{yyyy-MM-dd HH:mm:ss} %-5level [%X{akkaSource}] - %msg%n</pattern> </encoder>-->
         <encoder class="net.logstash.logback.encoder.LogstashEncoder" />
     </appender>
 
     <logger name="akka" level="debug">
-        <appender-ref ref="stash"/>
-        <appender-ref ref="console"/>
     </logger>
 
     <logger name="org" level="debug">
-        <appender-ref ref="stash"/>
-        <appender-ref ref="console"/>
     </logger>
 
     <logger name="com" level="debug">
-        <appender-ref ref="stash"/>
-        <appender-ref ref="console"/>
     </logger>
 
     <root level="DEBUG">
-        <appender-ref ref="stash"/>
-        <appender-ref ref="console"/>
+        <!--<appender-ref ref="console"/>-->
+        <appender-ref ref="file"/>
     </root>
 </configuration>

@@ -24,38 +24,41 @@ libraryDependencies ++= {
   )
 }
 
-mainClass in assembly := Some("com.example.Hello")
+mainClass in Compile := Some("com.example.Hello")
 
-jarName in assembly := "hello-world.jar"
+// enable native packager: http://www.scala-sbt.org/sbt-native-packager/archetypes/
+// read: http://www.scala-sbt.org/sbt-native-packager/archetypes/java_app/index.html
+//enablePlugins(JavaAppPackaging)
+// read: http://www.scala-sbt.org/sbt-native-packager/archetypes/java_server/index.html
+enablePlugins(JavaServerAppPackaging) //
 
-docker <<= (docker dependsOn assembly)
+// enable the universal plugin: http://www.scala-sbt.org/sbt-native-packager/formats/universal.html
+enablePlugins(UniversalPlugin)
 
-dockerfile in docker := {
-  val artifact = (outputPath in assembly).value
-  val artifactTargetPath = s"/app/${artifact.name}"
-  val configFile = baseDirectory.value / "src" / "main" / "resources" / "docker.conf"
-  val configFileTargetPath = s"/app/application.conf"
-  val logbackFile = baseDirectory.value / "src" / "main" / "resources" / "logback.xml"
-  val logbackFileTargetPath = "/app/logback.xml"
-  new Dockerfile {
-    from("java:8")
-    add(artifact, artifactTargetPath)
-    add(configFile, configFileTargetPath)
-    add(logbackFile, logbackFileTargetPath)
-    env("MONGO_DB", "test")
-    env("MONGO_HOST", "localhost")
-    env("MONGO_PORT", "27017")
-    entryPoint("java",
-      s"-Dconfig.file=$configFileTargetPath",
-      s"-Dlogback.configurationFile=$logbackFileTargetPath",
-      "-jar", artifactTargetPath)
-  }
-}
+// http://hirt.se/blog/?p=289
+// jmx over rmi. It requires an RMI registry to be running, from which a stub for communicating
+// with the RMI server can be looked up by the client. The port for the RMI server, which is returned
+// in the stub retrieved from the registry, is however anonymous by default.
+// This makes tunneling traffic pretty cumbersome. (like in a docker container)
+//
+// JDK 7u4 added the ability to specify the port of the RMI server by setting the 'com.sun.management.jmxremote.rmi.port'
+// variable. By setting them both to the same value, it becomes much easier communicating with JMX behind a firewall.
+//
+// see: http://docs.oracle.com/javase/7/docs/technotes/guides/rmi/javarmiproperties.html
+// see: http://docs.oracle.com/javase/7/docs/technotes/guides/management/agent.html
+// see: http://www.oracle.com/technetwork/java/javase/compatibility-417013.html
+javaOptions in Universal += Seq(
+  "-Djava.rmi.server.hostname=127.0.0.1",
+  "-Dcom.sun.management.jmxremote.port=9186", // port of the rmi registery
+  "-Dcom.sun.management.jmxremote.rmi.port=9186", // port of the rmi server
+  "-Dcom.sun.management.jmxremote.ssl=false", // To disable SSL
+  "-Dcom.sun.management.jmxremote.local.only=false", // when true, it indicates that the local JMX RMI connector will only accept connection requests from local interfaces
+  "-Dcom.sun.management.jmxremote.authenticate=false" // Password authentication for remote monitoring is disabled
+).mkString(" ")
 
-imageNames in docker := Seq(
-  ImageName(s"dnvriend/${name.value}:latest"),
-  ImageName (s"dnvriend/${name.value}:v${version.value}")
-)
+packageName in Universal := "helloworld"
+
+name in Universal := "helloworld"
 
 // enable dependencyGraph
 net.virtualvoid.sbt.graph.Plugin.graphSettings
@@ -65,5 +68,5 @@ Revolver.settings
 
 mainClass in Revolver.reStart := Some("com.example.Hello")
 
-lazy val helloWorldApp = (project in file(".")).
-  enablePlugins(DockerPlugin)
+Revolver.enableDebugging(port = 5050, suspend = false)
+

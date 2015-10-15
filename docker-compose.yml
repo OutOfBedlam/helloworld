@@ -21,17 +21,9 @@ rabbitmq:
     - "5672:5672"
 
 helloworld:
-  image: dnvriend/helloworld
-  links:
-    - "shipper:shipper"
-
-shipper:
-  build: logstash/shipper
+  build: .
   links:
     - "rabbitmq:rabbitmq"
-  ports:
-    - "4560:4560"
-  command: logstash -f /config-dir/shipper-pipeline.conf
 
 indexer:
   build: logstash/indexer
@@ -39,4 +31,3 @@ indexer:
     - "rabbitmq:rabbitmq"
     - "elasticsearch:elasticsearch"
   command: logstash -f /config-dir/indexer-pipeline.conf
-

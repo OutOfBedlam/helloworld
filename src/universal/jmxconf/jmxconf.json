@@ -1,0 +1,38 @@
+{
+  "host" : "127.0.0.1",
+  "port" : 9186,
+  "queries" : [
+  {
+    "object_name" : "java.lang:type=Memory",
+    "attributes" : [ "HeapMemoryUsage", "NonHeapMemoryUsage" ],
+    "object_alias" : "Memory"
+  },
+  {
+    "object_name" : "java.lang:type=OperatingSystem",
+    "attributes" : [ "Arch", "AvailableProcessors", "Name", "OpenFileDescriptorCount", "Version", "TotalSwapSpaceSize", "TotalPhysicalMemorySize", "SystemLoadAverage", "FreePhysicalMemorySize", "CommittedVirtualMemorySize" ],
+    "object_alias" : "OperatingSystem"
+  },
+  {
+    "object_name" : "java.lang:type=Compilation",
+    "attributes" : [ "TotalCompilationTime" ],
+    "object_alias" : "Compilation"
+  },
+  {
+    "object_name" : "java.lang:type=Runtime",
+    "attributes" : [ "Uptime", "StartTime", "SpecVersion", "SpecVendor", "VmVersion" ],
+    "object_alias" : "Runtime"
+  },
+  {
+    "object_name" : "java.lang:type=GarbageCollector,name=*",
+    "attributes" : [ "CollectionCount", "CollectionTime" ],
+    "object_alias" : "${type}.${name}"
+  },
+  {
+    "object_name" : "java.lang:type=MemoryPool,name=*",
+    "object_alias" : "${type}.${name}"
+  },
+  {
+    "object_name" : "java.nio:type=BufferPool,name=*",
+    "object_alias" : "${type}.${name}"
+  } ]
+}

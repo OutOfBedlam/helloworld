@@ -1,0 +1,5 @@
+.git/
+.idea/
+project/
+logstash/logstash-1.5.4/
+logstash/logstash/
